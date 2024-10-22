@@ -1,12 +1,9 @@
 import "./assets/main.css";
 import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
+import App from "./App.vue";
 import Main from "./components/Main.vue";
 import Questions from "./components/Questions.vue";
-
-import App from "./App.vue";
-
-const app = createApp(App);
 
 const routes = [
   { path: "/", name: "Main", component: Main },
@@ -14,10 +11,10 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory("/Opros/"), // Установите здесь базовый путь
   routes,
 });
 
+const app = createApp(App);
 app.use(router);
-
 app.mount("#app");
