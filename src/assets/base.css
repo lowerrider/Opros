@@ -4,6 +4,9 @@ body {
   background-color: #1e1e2f; /* Темный фон для контраста */
   overflow: hidden;
   position: relative;
+  background-image: url("./images/background!.png");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .snowflakes {
@@ -33,19 +36,123 @@ body {
   }
 }
 
-.tree {
+/* .tree {
   position: absolute;
   bottom: 20px;
-  left: 90%;
-  top: 20%;
+  left: 96%;
+  top: 85%;
   rotate: 10deg;
   transform: translateX(-50%);
   width: 150px;
   height: 150px;
-  background: url("./images/treee.png") no-repeat center; /* Замените на ссылку на изображение елки */
+  background: url("./images/treee.png") no-repeat center; 
   background-size: contain;
   z-index: 2;
 }
+
+.toy {
+  position: absolute;
+  bottom: 20px;
+  left: 10%;
+  top: 25%;
+  rotate: 10deg;
+  transform: translateX(-50%);
+  width: 232px;
+  height: 487px;
+  background: url("./images/toy.png") no-repeat center; 
+  background-size: 29rem;
+  z-index: 2;
+}
+.toy2 {
+  position: absolute;
+  bottom: 20px;
+  left: 22%;
+  top: 20%;
+  rotate: 13deg;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+  background: url("./images/toy2.png") no-repeat center; 
+  background-size: contain;
+  z-index: 2;
+}
+
+.toy3 {
+  position: absolute;
+  bottom: 20px;
+  left: 89%;
+  top: 20%;
+  rotate: 347deg;
+  transform: translateX(-50%);
+  width: 217px;
+  height: 387px;
+  background: url("./images/toy3.png") no-repeat center; 
+  background-size: 15rem;
+  z-index: 2;
+}
+
+.toy4 {
+  position: absolute;
+  bottom: 20px;
+  left: 74%;
+  top: 14%;
+  rotate: 356deg;
+  transform: translateX(-50%);
+  width: 217px;
+  height: 387px;
+  background: url("./images/toy4.png") no-repeat center; 
+  background-size: 15rem;
+  z-index: 2;
+}
+.nutcracker {
+  position: absolute;
+  bottom: 20px;
+  left: 4%;
+  top: 77%;
+  rotate: -13deg;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 256px;
+  background: url("./images/snegovik.png") no-repeat center; 
+  background-size: 12rem;
+  z-index: 2;
+}
+
+.podarok {
+  position: absolute;
+  bottom: 20px;
+  left: 66%;
+  top: 81%;
+  rotate: 358deg;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 256px;
+  background: url("./images/podarok.png") no-repeat center; 
+  z-index: 2;
+} */
+
+/* .vetka {
+  position: absolute;
+  left: -23%;
+  top: -41%;
+  z-index: -1;
+}
+
+.vetkaImg {
+  width: 2125px;
+}
+
+.vetka2 {
+  position: absolute;
+  left: 39%;
+  top: -42%;
+  z-index: -1;
+}
+
+.vetkaImg2 {
+  width: 2125px;
+  transform: scaleX(-1);
+} */
 
 .text {
   position: absolute;

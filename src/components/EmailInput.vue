@@ -1,29 +1,3 @@
-<template>
-  <div class="email-input-container">
-    <h2 class="title">Введите ваш Email</h2>
-    <div v-if="!isSubmitted">
-      <input
-        v-model="email"
-        type="email"
-        placeholder="example@mail.com"
-        class="email-input" />
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Введите пароль"
-        class="email-input" />
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-      <button
-        @click="submitEmail"
-        :disabled="!isEmailValid || loading"
-        class="submit-button">
-        {{ loading ? "Отправка..." : "Отправить" }}
-      </button>
-    </div>
-    <div v-else class="success-message">Вы успешно проголосовали!</div>
-  </div>
-</template>
-
 <script setup>
 import { ref, defineEmits, toRefs, watch } from "vue";
 
@@ -61,7 +35,7 @@ const submitEmail = () => {
   if (isEmailValid.value && password.value === validPassword) {
     loading.value = true;
     emit("submitted", { email: email.value, password: password.value });
-    console.log("Email для отправки:", email.value);
+
     isSubmitted.value = true;
     email.value = "";
     password.value = "";
@@ -73,14 +47,39 @@ const submitEmail = () => {
 };
 </script>
 
+<template>
+  <div class="email-input-container">
+    <h2 class="title">Введите ваш Email</h2>
+    <div class="email-input-container" v-if="!isSubmitted">
+      <input
+        v-model="email"
+        type="email"
+        placeholder="example@mail.com"
+        class="email-input" />
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Введите пароль"
+        class="email-input" />
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <button
+        @click="submitEmail"
+        :disabled="!isEmailValid || loading"
+        class="submit-button">
+        {{ loading ? "Отправка..." : "Отправить" }}
+      </button>
+    </div>
+    <div v-else class="success-message">Вы успешно проголосовали!</div>
+  </div>
+</template>
 <style scoped>
 .email-input-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
   max-width: 400px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -95,7 +94,7 @@ const submitEmail = () => {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 10px;
+  margin: 20px;
   font-size: 16px;
 }
 
@@ -111,6 +110,7 @@ const submitEmail = () => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin: 40px;
   font-size: 16px;
 }
 

@@ -1,58 +1,3 @@
-<script setup>
-import VueSelect from "vue3-select-component";
-import axios from "axios";
-import { ref, onMounted, computed, defineEmits, watch } from "vue";
-
-const props = defineProps({
-  title: String,
-  subTitle: String,
-  id: String,
-  selected: Number,
-});
-
-const emit = defineEmits(["update:selected"]);
-
-const selected = ref("");
-const items = ref([]);
-const passwordMap = ref({}); // Для хранения паролей пользователей
-
-const fetchItems = async () => {
-  try {
-    const { data } = await axios.get(
-      "https://b5862cf2cca63d34.mokky.dev/members"
-    );
-    items.value = data;
-    passwordMap.value = data.reduce((acc, member) => {
-      acc[member.email] = member.password; // Сохраняем пароль по email
-      return acc;
-    }, {});
-  } catch (e) {
-    console.error("Ошибка при получении данных:", e);
-  }
-};
-
-const options = computed(() =>
-  items.value.map((e) => ({
-    label: e.title,
-    value: e.personId,
-  }))
-);
-
-watch(
-  () => props.selected,
-  (newValue) => {
-    selected.value = newValue;
-  },
-  { immediate: true }
-);
-
-watch(selected, (newValue) => {
-  emit("update:selected", { id: props.id, value: newValue });
-});
-
-onMounted(fetchItems);
-</script>
-
 <template>
   <div class="content2">
     <div class="inputSize">
@@ -64,10 +9,47 @@ onMounted(fetchItems);
         :inputId="id"
         v-model="selected"
         :options="options"
-        placeholder="Выберите победителя" />
+        placeholder="Выберите номинанта из списка подтвердивших участие" />
     </div>
   </div>
 </template>
+
+<script setup>
+import VueSelect from "vue3-select-component";
+import { ref, computed, defineProps, watch, defineEmits } from "vue";
+
+const props = defineProps({
+  title: String,
+  subTitle: String,
+  id: String,
+  selected: Number,
+  nominees: Array,
+});
+
+const emit = defineEmits(["update:selected"]);
+const selected = ref(props.selected || null); // Инициализация с текущим выбранным значением
+
+const options = computed(() =>
+  props.nominees.map((nominee) => ({
+    label: nominee.title,
+    value: nominee.personId,
+  }))
+);
+
+// Синхронизация выбранного значения с родительским компонентом
+watch(
+  () => props.selected,
+  (newValue) => {
+    selected.value = newValue; // Обновление локального значения при изменении пропса
+  },
+  { immediate: true }
+);
+
+// Эмит события при изменении выбранного значения
+watch(selected, (newValue) => {
+  emit("update:selected", { id: props.id, value: newValue });
+});
+</script>
 
 <style scoped>
 .textTitle {

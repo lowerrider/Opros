@@ -28,7 +28,19 @@ const goToQuestions = () => {
         class="snowflake"
         style="left: 90%; animation-duration: 8s; animation-delay: 4s"></div>
     </div>
-    <div class="tree"></div>
+    <!-- <div class="tree"></div>
+    <div class="toy"></div>
+    <div class="toy2"></div>
+    <div class="toy3"></div>
+    <div class="toy4"></div>
+    <div class="nutcracker"></div>
+    <div class="podarok"></div>
+    <div class="vetka">
+      <img class="vetkaImg" src="./assets/images/vetka.png" alt="" />
+    </div>
+    <div class="vetka2">
+      <img class="vetkaImg2" src="./assets/images/vetka.png" alt="" />
+    </div> -->
 
     <router-view></router-view>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="center">
-    <h1 class="mainText">Опрос на новый год от Mega-Personal!</h1>
+    <h1 class="mainText">Новогоднее голосование от Mega-Personal!</h1>
   </div>
 </template>
 
