@@ -10,12 +10,14 @@
           :id="currentNomination.id.toString()"
           :selected="selectedValues[currentNomination.id]"
           @update:selected="updateSelected"
-          :nominees="nominees" />
+          :nominees="nominees"
+        />
         <EmailInput
           v-else
           :validEmails="validEmails"
           :memberData="memberData"
-          @submitted="handleFinalSubmit" />
+          @submitted="handleFinalSubmit"
+        />
       </transition>
       <div v-if="message" class="error-message">{{ message }}</div>
       <div v-if="successMessage" class="success-message">
@@ -26,7 +28,8 @@
           type="button"
           @click="previousQuestion"
           :disabled="isFirstQuestion"
-          :class="{ 'disabled-button': isFirstQuestion }">
+          :class="{ 'disabled-button': isFirstQuestion }"
+        >
           Предыдущий вопрос
         </button>
         <button v-if="!isLastQuestion" type="button" @click="nextQuestion">
@@ -79,7 +82,7 @@ const nominations = [
     url: "https://b5862cf2cca63d34.mokky.dev/chily",
   },
   {
-    title: "ГРЯЗНЫЙ САНЧЕС",
+    title: "CЛАВНЫЙ САНЧЕС",
     subTitle: "Сотрудник, который больше всех работает по мнению окружающих.",
     id: "derty",
     url: "https://b5862cf2cca63d34.mokky.dev/derty",
