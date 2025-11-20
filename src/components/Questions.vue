@@ -10,31 +10,32 @@
           :id="currentNomination.id.toString()"
           :selected="selectedValues[currentNomination.id]"
           @update:selected="updateSelected"
-          :nominees="nominees"
-        />
+          :nominees="nominees" />
         <EmailInput
           v-else
           :validEmails="validEmails"
           :memberData="memberData"
-          @submitted="handleFinalSubmit"
-        />
+          @submitted="handleFinalSubmit" />
       </transition>
+
       <div v-if="message" class="error-message">{{ message }}</div>
       <div v-if="successMessage" class="success-message">
         {{ successMessage }}
       </div>
+
       <div class="buttons" v-if="showQuestions">
         <button
           type="button"
           @click="previousQuestion"
           :disabled="isFirstQuestion"
-          :class="{ 'disabled-button': isFirstQuestion }"
-        >
+          :class="{ 'disabled-button': isFirstQuestion }">
           Предыдущий вопрос
         </button>
+
         <button v-if="!isLastQuestion" type="button" @click="nextQuestion">
           Следующий вопрос
         </button>
+
         <button v-else type="button" @click="handleSubmit">Отправить</button>
       </div>
     </form>
@@ -44,7 +45,7 @@
 <script setup>
 import QuestionEvent from "./QuestionEvent.vue";
 import EmailInput from "./EmailInput.vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 
 const validEmails = ref([]);
@@ -55,35 +56,40 @@ const showQuestions = ref(true);
 const memberData = ref([]);
 const successMessage = ref("");
 const nominees = ref([]);
+const loading = ref(false); // защита от двойной отправки
 
 const nominations = [
   {
-    title: "НАСЛЕДИЕ ЮНЕСКО",
-    subTitle: "Сотрудник, работой с которым гордится вся компания!",
+    title: "ПРИШЕЛЕЦ ГОДА",
+    subTitle:
+      "Сотрудник, пришедший в Компанию в 2025 году, мало говорит и носит в себе загадки (для новичков).",
     id: "unseko",
     url: "https://b5862cf2cca63d34.mokky.dev/unseko",
   },
   {
-    title: "ЗАГАДОЧНЫЙ МАЙЯ",
-    subTitle: "Внимательно следит за деталями, улавливает тонкости...",
+    title: "АГЕНТ МЕГА",
+    subTitle: "Коллега, обладающий космическим магнитизмом.",
     id: "maya",
     url: "https://b5862cf2cca63d34.mokky.dev/maya",
   },
   {
-    title: "ТЕКИЛА ЛЮБОВЬ",
-    subTitle: "Самый обаятельный и привлекательный даже без текилы.",
+    title: "АРКАНИАНЕЦ",
+    subTitle:
+      "(Способны одновременно существовать в пяти измерениях) - Коллега, способный выживать в сложных условиях и с нереальной нагрузкой.",
     id: "tekila",
     url: "https://b5862cf2cca63d34.mokky.dev/tekila",
   },
   {
-    title: "ОСТРЫЙ КАК ПЕРЕЦ ЧИЛИ",
-    subTitle: "Самый остроумный и веселый сотрудник компании.",
+    title: "ПРЕДВОДИТЕЛЬ ЧЕРВЕЙ",
+    subTitle:
+      "Коллега, которого всегда встретишь у кофемашины или коллега, который не может выжить без чашечки кофе.",
     id: "chily",
     url: "https://b5862cf2cca63d34.mokky.dev/chily",
   },
   {
-    title: "CЛАВНЫЙ САНЧЕС",
-    subTitle: "Сотрудник, который больше всех работает по мнению окружающих.",
+    title: "МОПС ФРЭНК",
+    subTitle:
+      "Сотрудник, который в курсе всего в Компании или сотрудник, который подскажет по любому вопросу.",
     id: "derty",
     url: "https://b5862cf2cca63d34.mokky.dev/derty",
   },
@@ -95,18 +101,24 @@ const isLastQuestion = computed(
 );
 const isFirstQuestion = computed(() => currentIndex.value === 0);
 
-// Функция для загрузки номинантов
+// === Загрузка номинантов ===
 const fetchNominees = async () => {
   try {
     const { data } = await axios.get(currentNomination.value.url);
-    nominees.value = data.sort((a, b) => a.title.localeCompare(b.title));
+    // Сортируем по id
+    nominees.value = data.sort((a, b) => a.id - b.id);
   } catch (error) {
     console.error("Ошибка при загрузке номинантов:", error);
     message.value = "Не удалось загрузить номинантов.";
   }
 };
 
-// Функция для загрузки валидных email
+// === РЕАКТИВНАЯ загрузка при смене вопроса ===
+watch(currentIndex, () => {
+  fetchNominees();
+});
+
+// === Валидные email ===
 const fetchValidEmails = async () => {
   try {
     const { data } = await axios.get(
@@ -125,28 +137,19 @@ const updateSelected = (update) => {
 };
 
 const nextQuestion = () => {
-  if (currentIndex.value < nominations.length - 1) {
-    currentIndex.value++;
-    fetchNominees(); // Обновляем список номинантов
-  }
+  if (!isLastQuestion.value) currentIndex.value++;
 };
 
 const previousQuestion = () => {
-  if (currentIndex.value > 0) {
-    currentIndex.value--;
-    fetchNominees(); // Обновляем список номинантов
-  }
+  if (!isFirstQuestion.value) currentIndex.value--;
 };
 
 const handleSubmit = () => {
-  const unansweredQuestion = nominations.find((nom, index) => {
-    return !selectedValues.value[nom.id] && index <= currentIndex.value;
-  });
+  const unansweredIndex = nominations.findIndex(
+    (nom) => !selectedValues.value[nom.id]
+  );
 
-  if (unansweredQuestion) {
-    const unansweredIndex = nominations.findIndex(
-      (nom) => nom.id === unansweredQuestion.id
-    );
+  if (unansweredIndex !== -1) {
     currentIndex.value = unansweredIndex;
     message.value = "Пожалуйста, выберите номинанта перед отправкой.";
     return;
@@ -155,58 +158,65 @@ const handleSubmit = () => {
   message.value = "";
 
   if (isLastQuestion.value) {
-    showQuestions.value = false; // Переход к форме отправки ответов
+    showQuestions.value = false;
   } else {
-    nextQuestion(); // Переход к следующему вопросу
+    nextQuestion();
   }
 };
 
 const handleFinalSubmit = async (emailData) => {
+  if (loading.value) return; // защита от двойного клика
+  loading.value = true;
+
   const member = memberData.value.find((m) => m.email === emailData.email);
 
-  if (member) {
-    try {
-      const response = await axios.get(
-        `https://b5862cf2cca63d34.mokky.dev/answers?email=${emailData.email}`
-      );
-
-      if (response.data.length > 0) {
-        message.value = "Вы уже проголосовали!";
-        successMessage.value = "";
-        return;
-      }
-
-      const dataToSend = {
-        email: emailData.email,
-        personId: member.personId,
-        unesko: selectedValues.value["unseko"] || null,
-        maya: selectedValues.value["maya"] || null,
-        tekila: selectedValues.value["tekila"] || null,
-        chily: selectedValues.value["chily"] || null,
-        derty: selectedValues.value["derty"] || null,
-      };
-
-      await axios.post(
-        "https://b5862cf2cca63d34.mokky.dev/answers",
-        dataToSend
-      );
-      successMessage.value = "Спасибо за ваш голос!";
-      message.value = "";
-    } catch (error) {
-      console.error("Ошибка при отправке данных:", error);
-      message.value =
-        "Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.";
-      successMessage.value = "";
-    }
-  } else {
+  if (!member) {
     message.value = "Email не найден. Пожалуйста, проверьте введенный email.";
     successMessage.value = "";
+    loading.value = false;
+    return;
+  }
+
+  try {
+    const response = await axios.get(
+      `https://b5862cf2cca63d34.mokky.dev/answers?email=${emailData.email}`
+    );
+
+    if (response.data.length > 0) {
+      message.value = "Вы уже проголосовали!";
+      successMessage.value = "";
+      loading.value = false;
+      return;
+    }
+
+    // === Оставляем старый формат (как ты просил) ===
+    const dataToSend = {
+      email: emailData.email,
+      personId: member.personId,
+      unesko: selectedValues.value["unseko"] || null,
+      maya: selectedValues.value["maya"] || null,
+      tekila: selectedValues.value["tekila"] || null,
+      chily: selectedValues.value["chily"] || null,
+      derty: selectedValues.value["derty"] || null,
+    };
+
+    await axios.post("https://b5862cf2cca63d34.mokky.dev/answers", dataToSend);
+
+    successMessage.value = "Спасибо за ваш голос!";
+    message.value = "";
+  } catch (error) {
+    console.error("Ошибка при отправке данных:", error);
+    message.value =
+      "Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.";
+    successMessage.value = "";
+  } finally {
+    loading.value = false;
   }
 };
 
 onMounted(() => {
   fetchValidEmails();
-  fetchNominees(); // Загрузить номинантов для первого вопроса
+  fetchNominees();
 });
 </script>
 
@@ -230,7 +240,6 @@ onMounted(() => {
 }
 .buttons {
   display: flex;
-  /* justify-content: space-between; */
   justify-content: center;
   gap: 50px;
   margin-top: 200px;
