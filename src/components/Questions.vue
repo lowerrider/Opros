@@ -67,7 +67,7 @@ const nominations = [
     url: "https://b5862cf2cca63d34.mokky.dev/unseko",
   },
   {
-    title: "АГЕНТ МЕГА",
+    title: "АГЕНТ MEGA",
     subTitle: "Коллега, обладающий космическим магнитизмом.",
     id: "maya",
     url: "https://b5862cf2cca63d34.mokky.dev/maya",
